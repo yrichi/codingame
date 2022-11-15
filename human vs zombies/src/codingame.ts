@@ -5,7 +5,7 @@ import { isModeDev, readline } from "./dummy";
  **/
 
 
- export enum TypeElement {
+export enum TypeElement {
     HUMAN,
     HERO,
     ZOMBIE,
@@ -98,26 +98,10 @@ export class Element {
     }
 
     getNextHop(cible: Element): Element {
-
-        let nextNeighbour = new Element(this.position.positionX, this.position.positionY);
-        const facteur = this.getDistanceManathanByElement(cible);
-        let isFinish = false;
-        while (!isFinish) {
-            let isFindNewNearestNeighbour = false;
-            for (const direction in [0, 1, 2, 3, 4, 5, 6, 7]) {
-                const elementDirectNeighbour = this.getNeigbourElementByDirection(nextNeighbour, <Direction>+direction, facteur);
-                if (elementDirectNeighbour.getDistanceManathanByElement(this) <= this.getDistanceHopMax()
-                    && elementDirectNeighbour.getDistanceManathanByElement(cible) < nextNeighbour.getDistanceManathanByElement(cible)) {
-                    nextNeighbour = elementDirectNeighbour;
-                    isFindNewNearestNeighbour = true;
-                }
-            }
-            if (!isFindNewNearestNeighbour) {
-                isFinish = true;
-            }
-        }
-
-        return nextNeighbour;
+        const hypothenuse = this.getDistanceManathanByElement(cible);
+        const x = this.position.positionX + this.getDistanceHopMax() * ((cible.position.positionX - this.position.positionX) / hypothenuse);
+        const y = this.position.positionY + this.getDistanceHopMax() * ((cible.position.positionY - this.position.positionY) / hypothenuse);
+        return new Element(Math.trunc(x),Math.trunc(y));
     }
 
     getDistanceHopMax(): number {
@@ -166,9 +150,9 @@ export class Partie {
             const humanDistanceLePlusProcheZombie = humain.getDistanceOfElementLePlusProche(this.zombies);
             console.error(" humain sauvable");
             console.error(
-                "human human" + humanDistanceHero + 
-                " human zombie" + humanDistanceLePlusProcheZombie + 
-                "on peut le sauver " + 
+                "human human" + humanDistanceHero +
+                " human zombie" + humanDistanceLePlusProcheZombie +
+                "on peut le sauver " +
                 (humanDistanceHero <= humanDistanceLePlusProcheZombie ? "true" : "false"));
             return humanDistanceHero <= humanDistanceLePlusProcheZombie;
         });
@@ -185,7 +169,7 @@ export class Partie {
             //const zombieYNext: number = parseInt(inputs[4]);
             //this.zombies.push(new Element(zombieXNext, zombieYNext, TypeElement.ZOMBIE))
         }
-        console.error("nbzombie "+this.zombies.length)
+        console.error("nbzombie " + this.zombies.length)
     }
 
     fillHumans(humanCount: number): void {
@@ -231,11 +215,11 @@ export class Simulation {
 
     playAllGame() {
         let nbLoop = 0;
-        while (!this.isGameFinished && nbLoop<= MAX_LOOP) {
+        while (!this.isGameFinished ) {
             nbLoop++;
             this.nextTurn();
         }
-        
+
         console.error("fin loop")
     }
 
@@ -279,8 +263,8 @@ export class Simulation {
                     break;
             }
         })
-        if (this.getHumansAlive().length == 0 || this.getZombiesAlive().length == 0) {  
-        console.error("tour fini")
+        if (this.getHumansAlive().length == 0 || this.getZombiesAlive().length == 0) {
+            console.error("tour fini")
             this.isGameFinished = true;
         }
     }
