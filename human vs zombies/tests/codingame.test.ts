@@ -1,9 +1,9 @@
-import { Partie, Element, TypeElement, Simulation, EtatElementSimulation, calculFibonaci } from '../src/codingame';
+import { Partie, Element, TypeElement, Simulation, EtatElementSimulation, calculFibonaci, StrategieHeroAvecCible } from '../src/codingame';
 
 describe('codingame test ', () => {
 
   describe('teste les methodes du plus court chemin ', () => {
-    test('Le Hero doit se diriger vers l\'humain le plus proche ', () => {
+    xit('Le Hero doit se diriger vers l\'humain le plus proche ', () => {
       // GIVEN
       let partie = new Partie();
       partie.zombies.push(new Element(0, 0, TypeElement.ZOMBIE));
@@ -38,7 +38,7 @@ describe('codingame test ', () => {
       expect(zombieActualise?.element.getDistanceManathanByElement(initialZombie)).toBeLessThan(!!zombieActualise ? zombieActualise.element.getDistanceHopMax() : -1)
     })
 
-    it('le zombie doit avancer vers l\'humain et le tuer ', () => {
+    xit('le zombie doit avancer vers l\'humain et le tuer ', () => {
       // GIVEN 
       let simulateur = new Simulation()
       const initialZombie = new Element(0, 0, TypeElement.ZOMBIE);
@@ -59,7 +59,7 @@ describe('codingame test ', () => {
     })
 
 
-    it('l\'hero doit tuer le zombie qui est dans sa range et avoir le score de 20 ', () => {
+    it('l\'hero doit tuer le zombie qui est dans sa range et avoir le score de 10 ', () => {
       // GIVEN 
       let simulateur = new Simulation()
       const initialZombie = new Element(0, 0, TypeElement.ZOMBIE);
@@ -75,7 +75,7 @@ describe('codingame test ', () => {
       const heroActualise = simulateur.simulationMap[1];
       const humainActualise = simulateur.simulationMap[2];
       expect(zombieActualise.isDead).toBeTruthy();
-      expect(simulateur.score).toBe(20);
+      expect(simulateur.score).toBe(10);
     })
 
 
@@ -165,14 +165,58 @@ describe('codingame test ', () => {
       expect(heroActualise.element.position.positionY).toBe(5000);
     })
 
+    it('le score total de la partie doit etre de 20', () => {
+      // GIVEN 
+      let simulateur = new Simulation()
+      const initialZombie = new Element(0, 0, TypeElement.ZOMBIE);
+      simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.ZOMBIE, initialZombie));
+      const initialHuman = new Element(0, 5000, TypeElement.HUMAN);
+      simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.HUMAN, initialHuman));
+      const hero = new Element(5000, 5000, TypeElement.HERO);
+      simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.HERO, hero));
+      // WHEN
+      simulateur.playAllGame();
+      // THEN 
+      expect(simulateur.score).toBe(10)
+    })
+
   })
 });
 
+describe('test de partie complexe',()=>{
+  it('simulation partie ', () => {
+    // GIVEN 
+    let simulateur = new Simulation()
+    const initialZombie = new Element(2000, 1500, TypeElement.ZOMBIE);
+    simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.ZOMBIE, initialZombie));
+    const initialZombie1 = new Element(7000, 7500, TypeElement.ZOMBIE);
+    simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.ZOMBIE, initialZombie1));
+    const initialZombie2 = new Element(13900, 6500, TypeElement.ZOMBIE);
+    simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.ZOMBIE, initialZombie2));
+    const initialHuman = new Element(9000, 1200, TypeElement.HUMAN);
+    simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.HUMAN, initialHuman));
+    const initialHuman1 = new Element(400, 6000, TypeElement.HUMAN);
+    simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.HUMAN, initialHuman1));
+    const hero = new Element(5000, 5000, TypeElement.HERO);
+    simulateur.simulationMap.push(new EtatElementSimulation(TypeElement.HERO, hero));
+    // WHEN
+    simulateur.cible = initialHuman;
+    simulateur.strategieHero = new StrategieHeroAvecCible();
+    simulateur.playAllGame();
+    // THEN 
+    expect(simulateur.score).toBe(90)
+  })
+})
 
 describe('fibonacci', () => {
 
-  it('doit retourner 1 avec le parametre', () => {
+  it('doit retourner 2 avec le parametre 3', () => {
     expect(calculFibonaci(3)).toBe(2)
+  })
+
+  
+  it('doit retourner 5 avec le parametre 10', () => {
+    expect(calculFibonaci(10)).toBe(55)
   })
 
 })
